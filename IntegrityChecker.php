@@ -18,7 +18,7 @@ class IntegrityChecker {
     ];
     
     // Remote hash storage URL (your server)
-    private $_remoteHashUrl = 'https://728rabbit.github.io/app-store-hash/';
+    private $_remoteHashUrl = 'https://app-store-hash.netlify.app/';
     
     private $_currentDomain = '';
     private $_newHash = '';
