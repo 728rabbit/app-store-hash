@@ -179,9 +179,9 @@ class IntegrityChecker {
 
     // Regular inspection
     public function periodicCheck() {
-        // Check every 6 hours
+        // Check every 12 hours
         $lastCheck = Cache::get('integrity_last_check_time', 0);
-        $max_diff_secs = 3600 * 6;
+        $max_diff_secs = 3600 * 12;
         if (time() - $lastCheck > $max_diff_secs) {
             if(empty($this->checkIntegrity())) {
                 Cache::put('integrity_last_check_time', time() - $max_diff_secs, now()->addDays(2));
