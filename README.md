@@ -1,2 +1,2 @@
 # app-store-hash
-internal Verification
+Used to detect changes to the system's core code.
