@@ -33,15 +33,12 @@ class IntegrityChecker {
             $hashes = $this->calculateFileHashes();
             $currentHash = hash('sha256', ($currentDomain.'#'.Config::get('app_portal.application_uid').'#'.$this->hashOfHashes($hashes)));
             
-
             // Obtain remote check code
             $lastHash = '';
             $content = $this->curlGet($this->_remoteHashUrl);
             if (!empty($content)) {
-                $content = strip_tags(trim(str_replace('&nbsp;', ' ', $content)));
-                $content = preg_replace('/\s(?=\s)/', '', $content);
-                $content = preg_replace('/[\n\r\t]/', ' ', $content);
-                $lastHashData = json_decode(trim($content), true);
+                $content = $this->plainText($content);
+                $lastHashData = json_decode($content, true);
                 if(!empty($lastHashData) && !empty($lastHashData['vcode'])) {
                     $lastHash = $lastHashData['vcode'];
                 }
@@ -88,12 +85,18 @@ class IntegrityChecker {
             $fullPath = base_path($path);
             
             if (is_file($fullPath)) {
-                $hashes[$path] = hash_file('sha256', $fullPath);
+                $content = $this->plainText(file_get_contents($fullPath));
+                if(!empty($content)) {
+                    $hashes[$path] = hash('sha256', base64_encode($content));
+                }
             } elseif (is_dir($fullPath)) {
                 $files = $this->scanDirectory($fullPath);
                 foreach ($files as $file) {
-                    $relativePath = str_replace(base_path() . '/', '', $file);
-                    $hashes[$relativePath] = hash_file('sha256', $file);
+                    $content = $this->plainText(file_get_contents($file));
+                    if(!empty($content)) {
+                        $relativePath = str_replace(base_path() . '/', '', $file);
+                        $hashes[$relativePath] = hash('sha256', base64_encode($content));
+                    }
                 }
             }
         }
@@ -154,6 +157,24 @@ class IntegrityChecker {
         }
         
         return hash('sha256', $combined);
+    }
+    
+    // Convert to plant text
+    protected function plainText(string $value = '', bool $singleLine = true): string {
+        if(!empty($value)) {
+            // Remove HTML tags and process entities
+            $value = (trim(str_replace('&nbsp;', ' ', $value)));
+            
+            // Optional: Convert to a single line (first convert all whitespace characters to spaces)
+            if (!empty($singleLine)) {
+                $value = preg_replace('/[\n\r\t]/', ' ', $value);
+            }
+            
+            // Remove the second start of consecutive blanks
+            $value = trim(preg_replace('/\s(?=\s)/', '', $value));
+        }
+        
+        return $value;
     }
 
     // Regular inspection
