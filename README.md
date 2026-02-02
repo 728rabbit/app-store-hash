@@ -1,13 +1,6 @@
 # app-store-hash
 Used to detect changes to the system's core code.
 
-$copy = base64_encode(json_encode([
-                    'domain'        =>  $this->_currentDomain,
-                    'vcode'         =>  $currentHash,
-                    'generated_at'  =>  date('Y-m-d H:i:s')
-                ]));
-
-
 ## 重要聲明：
 
 本系統設有自動完整性檢查機制，會定期驗證核心程式碼是否完整無缺。
