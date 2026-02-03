@@ -1,4 +1,4 @@
-# app-store-hash
+# icoreguard
 Used to detect changes to the system's core code.
 
 ## 重要聲明：
